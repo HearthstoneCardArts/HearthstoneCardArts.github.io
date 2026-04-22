@@ -122,11 +122,23 @@ outline: 2px solid var(--input-border);
 outline-offset: 2px;
 }
 
-.version-text {
-align-self: flex-end;
-font-size: 14px;
-color: var(--placeholder-color);
-margin-top: 5px;
+.misc-text {
+    font-size: 14px;
+    color: var(--placeholder-color);
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: right;
+    gap: 4px;
+}
+
+a {
+    color: #97c9ff;
+    text-decoration: underline dashed;
 }
 
 .art-result {
