@@ -15,24 +15,21 @@ function normalizeString(str) {
 }
 
 function findCardArt(cardName) {
-  if (!cardsData) return null;
+  if (!cardsData) return [];
   
   const normalizedInput = normalizeString(cardName);
+  const matches = [];
   
   for (const card of cardsData) {
     const cardNameStr = card.name || '';
     if (normalizedInput === normalizeString(cardNameStr)) {
-      const cardId = card.id;
-      if (cardId) {
-        return {
-          artUrl: `https://art.hearthstonejson.com/v1/512x/${cardId}.jpg`,
-          actualName: cardNameStr,
-          exactMatch: true
-        };
-      }
+      matches.push({
+        artUrl: `https://art.hearthstonejson.com/v1/512x/${card.id}.jpg`,
+        actualName: cardNameStr
+      });
     }
   }
-  return null;
+  return matches; // return an array to support multiple card variations (e.g. secretkeeper with 2 arts)
 }
 
 function findSimilarCards(cardName) {
@@ -50,7 +47,7 @@ function findSimilarCards(cardName) {
     }
   }
   
-  return matches.slice(0, 5);
+  return [...new Set(matches)].slice(0, 5); // set to remove duplicates
 }
 
 function showErrorMessage(message, similarCards = []) {
@@ -61,7 +58,6 @@ function showErrorMessage(message, similarCards = []) {
   if (similarCards.length > 0) {
     const suggestionsDiv = document.createElement('div');
     suggestionsDiv.className = 'suggestions-list';
-    
     suggestionsDiv.innerHTML = '<div style="margin-top: 10px; font-weight: 600;">Perhaps you meant:</div>';
     
     similarCards.forEach(cardName => {
@@ -78,10 +74,8 @@ function showErrorMessage(message, similarCards = []) {
       };
       suggestionsDiv.appendChild(link);
     });
-    
     errorDiv.appendChild(suggestionsDiv);
   }
-  
   document.getElementById('artResult').classList.remove('show');
 }
 
@@ -91,12 +85,22 @@ function hideErrorMessage() {
   errorDiv.style.display = 'none';
 }
 
-function showArt(cardName, artData) {
+function showArt(artDataArray) {
   hideErrorMessage();
-  document.getElementById('artImage').src = artData.artUrl;
-  document.getElementById('artName').textContent = `Card: ${artData.actualName}`;
-  document.getElementById('artLink').href = artData.artUrl;
-  document.getElementById('artResult').classList.add('show');
+  const artResult = document.getElementById('artResult');
+  artResult.innerHTML = '';
+  artResult.classList.add('show');
+
+  artDataArray.forEach(data => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'art-wrapper';
+    wrapper.innerHTML = `
+      <img src="${data.artUrl}" alt="Card Art" class="art-image">
+      <div class="art-name">${data.actualName}</div>
+      <a href="${data.artUrl}" target="_blank" class="art-link">Open in new tab</a>
+    `;
+    artResult.appendChild(wrapper);
+  });
 }
 
 function hideArt() {
@@ -113,55 +117,10 @@ function hideLoading() {
   document.getElementById('searchBtn').disabled = false;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('searchForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const cardName = document.getElementById('cardName').value;
-    
-    if (!cardName.trim()) {
-      showErrorMessage('Enter a card name.');
-      return;
-    }
-
-    showLoading();
-    hideArt();
-    hideErrorMessage();
-
-    if (!cardsData) {
-      await fetchCardsData();
-    }
-
-    setTimeout(() => {
-      const result = findCardArt(cardName);
-      
-      if (result) {
-        showArt(cardName, result);
-      } else {
-        const similarCards = findSimilarCards(cardName);
-        
-        if (similarCards.length > 0) {
-          showErrorMessage(
-            `"${cardName}" not found.`,
-            similarCards
-          );
-        } else {
-          showErrorMessage(`"${cardName}" doesn't exist.`);
-        }
-      }
-      
-      hideLoading();
-    }, 200);
-  });
-
-  fetchCardsData();
-});
-
 function setRandomPlaceholder() {
   if (!cardsData || cardsData.length === 0) return;
   const randomCard = cardsData[Math.floor(Math.random() * cardsData.length)];
-  const placeholder = `For example: ${randomCard.name}`;
-  document.getElementById('cardName').placeholder = placeholder;
+  document.getElementById('cardName').placeholder = `For example: ${randomCard.name}`;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -177,25 +136,22 @@ document.addEventListener('DOMContentLoaded', function() {
     showLoading();
     hideArt();
     hideErrorMessage();
-    if (!cardsData) {
-      await fetchCardsData();
-    }
+    
+    if (!cardsData) await fetchCardsData();
 
     setTimeout(() => {
-      const result = findCardArt(cardName);
+      const results = findCardArt(cardName);
       
-      if (result) {
-        showArt(cardName, result);
+      if (results.length > 0) {
+        showArt(results);
       } else {
         const similarCards = findSimilarCards(cardName);
-        
         if (similarCards.length > 0) {
           showErrorMessage(`"${cardName}" not found.`, similarCards);
         } else {
           showErrorMessage(`"${cardName}" doesn't exist.`);
         }
       }
-      
       hideLoading();
     }, 200);
   });
@@ -204,4 +160,3 @@ document.addEventListener('DOMContentLoaded', function() {
     setRandomPlaceholder();
   });
 });
-setRandomPlaceholder();
