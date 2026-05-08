@@ -16,20 +16,24 @@ function normalizeString(str) {
 
 function findCardArt(cardName) {
   if (!cardsData) return [];
-  
+
   const normalizedInput = normalizeString(cardName);
   const matches = [];
-  
+
   for (const card of cardsData) {
     const cardNameStr = card.name || '';
     if (normalizedInput === normalizeString(cardNameStr)) {
+      // art type prefix like EX1 etc.
+      const artType = card.id.split("_").slice(0, -1).join("_") || "Standard";
+
       matches.push({
         artUrl: `https://art.hearthstonejson.com/v1/512x/${card.id}.jpg`,
-        actualName: cardNameStr
+        actualName: cardNameStr,
+        artType: artType,
       });
     }
   }
-  return matches; // return an array to support multiple card variations (e.g. secretkeeper with 2 arts)
+  return matches;
 }
 
 function findSimilarCards(cardName) {
@@ -97,6 +101,7 @@ function showArt(artDataArray) {
     wrapper.innerHTML = `
       <img src="${data.artUrl}" alt="Card Art" class="art-image">
       <div class="art-name">${data.actualName}</div>
+      <div class="art-type">${data.artType}</div>
       <a href="${data.artUrl}" target="_blank" class="art-link">Open in new tab</a>
     `;
     artResult.appendChild(wrapper);
