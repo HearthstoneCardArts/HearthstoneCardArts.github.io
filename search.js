@@ -54,6 +54,45 @@ function findSimilarCards(cardName) {
   return [...new Set(matches)].slice(0, 5); // set to remove duplicates
 }
 
+function suggestionMaker(query) {
+  const datalist = document.getElementById('cardSuggestions');
+  datalist.innerHTML = '';
+  if (!cardsData || !query.trim()) return;
+  const normalizedInput = normalizeString(query);
+
+  const matches = [...new Set(
+    cardsData
+      .map(card => card.name || '')
+      .filter(name => normalizeString(name).includes(normalizedInput))
+  )].slice(0, 8);
+  matches.forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    datalist.appendChild(option);
+  });
+}
+
+document.getElementById('cardName').addEventListener('input', (e) => {
+  suggestionMaker(e.target.value);
+});
+
+const input = document.getElementById('cardName');
+const form = document.getElementById('searchForm');
+
+input.addEventListener('input', (e) => {
+  suggestionMaker(e.target.value);
+});
+
+input.addEventListener('change', () => {
+  if (!input.value.trim()) return;
+
+  form.requestSubmit();
+
+  setTimeout(() => {
+    document.getElementById('cardSuggestions').innerHTML = '';
+  }, 0);
+});
+
 function showErrorMessage(message, similarCards = []) {
   const errorDiv = document.getElementById('errorMessage');
   errorDiv.innerHTML = message;
