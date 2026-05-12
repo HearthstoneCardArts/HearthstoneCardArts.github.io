@@ -24,10 +24,11 @@ function findCardArt(cardName) {
     const cardNameStr = card.name || '';
     if (normalizedInput === normalizeString(cardNameStr)) {
       // art type prefix like EX1 etc.
-      const artType = card.id.split("_").slice(0, -1).join("_") || "Standard";
+      const artType = card.id.split("_").slice(0, -1).join("_") || "Unknown set";
 
       matches.push({
-        artUrl: `https://art.hearthstonejson.com/v1/512x/${card.id}.jpg`,
+        previewUrl: `https://art.hearthstonejson.com/v1/256x/${card.id}.jpg`, // search shows 256x resolution card
+        fullUrl: `https://art.hearthstonejson.com/v1/orig/${card.id}.png`, // Open in new tab opens original resolution
         actualName: cardNameStr,
         artType: artType,
       });
@@ -138,10 +139,10 @@ function showArt(artDataArray) {
     const wrapper = document.createElement('div');
     wrapper.className = 'art-wrapper';
     wrapper.innerHTML = `
-      <img src="${data.artUrl}" alt="Card Art" class="art-image">
+      <img src="${data.previewUrl}" alt="Card Art" class="art-image">
       <div class="art-name">${data.actualName}</div>
       <div class="art-type">${data.artType}</div>
-      <a href="${data.artUrl}" target="_blank" class="art-link">Open in new tab</a>
+      <a href="${data.fullUrl}" target="_blank" rel="noopener noreferrer" class="art-link">Open in new tab</a>
     `;
     artResult.appendChild(wrapper);
   });
