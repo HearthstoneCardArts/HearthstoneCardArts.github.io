@@ -1,11 +1,8 @@
 # FAQ 💡
-If you have a question or feature request that is not listed here, feel free to [Open new issue](https://github.com/HearthstoneCardArts/HearthstoneCardArts.github.io/issues/new)
+If you have a question, feature request or fix that is not listed here, feel free to [Open new issue](https://github.com/HearthstoneCardArts/HearthstoneCardArts.github.io/issues/new)
 
-Q: When I search for the card it opens the art in low resolution<br>
-A: Use *Open in new tab* for full resolution view
-<br><br>
-Q: I want to search using my native language and it's not English 😒<br>
-A: I'm planning to add multiple language search in the near future (hopefully)
+Q: When I search for the card it opens the art in low resolution!<br>
+A: Use *Open in new tab* for full resolution view.
 <br><br>
 Q: What does the `HERO` or any other text below the card mean?<br>
 A: These are unique prefixes meant to identify arts across multiple expansions.
@@ -242,5 +239,5 @@ tt
 </details>
 <br><br>
 
-##### All data is obtained through [HearthstoneJSON](https://api.hearthstonejson.com/v1/)
-###### This project is not affiliated with Blizzard and no profit is made
+<sub>All data is obtained through [HearthstoneJSON](https://api.hearthstonejson.com/v1/)<br>
+This project is not affiliated with Blizzard and no profit is made</sub>
