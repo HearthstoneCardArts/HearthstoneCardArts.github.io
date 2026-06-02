@@ -9,10 +9,10 @@ A: These are unique prefixes meant to identify arts across multiple expansions.
 <details>
 <summary>Click to reveal all possible prefixes </summary><br>
   
-`(Updated 5/18/2026)`  
+`(Updated 2026-06-02 )`  
   
 ```
-Total: 221
+Total: 222
 
 AT
 AV
@@ -187,6 +187,7 @@ HERO_11s_Scarlet
 HERO_11t_Lanathel
 HERO_11u
 ICC
+JAIL
 JAM
 KAR
 LEG_CS3
