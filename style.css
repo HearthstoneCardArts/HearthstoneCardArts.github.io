@@ -16,6 +16,12 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
+  
+  /* Rarity colors */
+  --rarity-common: #9d9d9d;
+  --rarity-rare: #0070dd;
+  --rarity-epic: #a335ee;
+  --rarity-legendary: #ff8000;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,6 +39,12 @@
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    
+    /* Dark mode rarity colors (slightly adjusted for visibility) */
+    --rarity-common: #8a8a8a;
+    --rarity-rare: #3a8fd4;
+    --rarity-epic: #9b4dca;
+    --rarity-legendary: #e67a00;
   }
 }
 
@@ -278,6 +290,28 @@ b {
   padding: 14px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--input-border);
+  transition: border-color 0.3s ease;
+}
+
+/* Rarity border styles - subtle outline around the card */
+.art-wrapper.rarity-common {
+  border-color: var(--rarity-common);
+  border-width: 2px;
+}
+
+.art-wrapper.rarity-rare {
+  border-color: var(--rarity-rare);
+  border-width: 2px;
+}
+
+.art-wrapper.rarity-epic {
+  border-color: var(--rarity-epic);
+  border-width: 2px;
+}
+
+.art-wrapper.rarity-legendary {
+  border-color: var(--rarity-legendary);
+  border-width: 2px;
 }
 
 .art-image {
@@ -304,6 +338,41 @@ b {
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* Artist name styling - slightly darker than expansion name */
+.art-artist {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--placeholder-color);
+  margin-top: 2px;
+  opacity: 0.7;
+  letter-spacing: 0.03em;
+}
+
+/* Rarity label - optional small text showing rarity */
+.art-rarity {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.art-rarity.rarity-common {
+  color: var(--rarity-common);
+}
+
+.art-rarity.rarity-rare {
+  color: var(--rarity-rare);
+}
+
+.art-rarity.rarity-epic {
+  color: var(--rarity-epic);
+}
+
+.art-rarity.rarity-legendary {
+  color: var(--rarity-legendary);
 }
 
 .art-link {
