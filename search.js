@@ -1,6 +1,7 @@
 let cardsByLocale = {};
 let currentLocale = 'enUS';
 
+// locales with flags
 const localeOptions = {
   deDE: { flag: '🇩🇪' },
   enUS: { flag: '🇺🇸' },
@@ -34,12 +35,32 @@ const localePlaceholder = {
   plPL: 'Na przykład'
 };
 
+const rarityMap = {
+  '1': 'common',
+  '2': 'common',
+  '3': 'rare',
+  '4': 'epic',
+  '5': 'legendary',
+  'FREE': 'common',
+  'COMMON': 'common',
+  'RARE': 'rare',
+  'EPIC': 'epic',
+  'LEGENDARY': 'legendary'
+};
+
+// remove accents, special chars, lowercase
 function normalizeString(str) {
   return (str || '')
     .toLocaleLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\p{L}\p{N}]+/gu, '');
+}
+
+function getRarityClass(rarity) {
+  if (!rarity) return 'common';
+  const rarityLower = String(rarity).toUpperCase();
+  return rarityMap[rarityLower] || rarityMap[rarity] || 'common';
 }
 
 async function fetchCardsData(locale = 'enUS') {
@@ -61,20 +82,19 @@ async function fetchAllCardsData() {
   await Promise.all(supportedLocales.map(locale => fetchCardsData(locale)));
 }
 
+// random card name as placeholder
 function setRandomPlaceholder() {
   const cards = cardsByLocale[currentLocale] || [];
   const input = document.getElementById('cardName');
   if (!input) return;
-
-  if (!cards.length) {
-    return;
-  }
+  if (!cards.length) {return;}
 
   const randomCard = cards[Math.floor(Math.random() * cards.length)];
   const label = localePlaceholder[currentLocale] || 'For example';
   input.placeholder = `${label}: ${randomCard.name}`;
 }
 
+// locale dropdown menu
 function buildLocaleDropdown() {
   const dropdown = document.getElementById('localeDropdown');
   if (!dropdown) return;
@@ -105,12 +125,12 @@ function toggleLocaleDropdown() {
   const dropdown = document.getElementById('localeDropdown');
   if (dropdown) dropdown.classList.toggle('show');
 }
-
 function closeLocaleDropdown() {
   const dropdown = document.getElementById('localeDropdown');
   if (dropdown) dropdown.classList.remove('show');
 }
 
+// art by exact name match
 function findCardArt(cardName, locale = currentLocale) {
   const cardsData = cardsByLocale[locale] || [];
   const normalizedInput = normalizeString(cardName);
@@ -121,19 +141,28 @@ function findCardArt(cardName, locale = currentLocale) {
     if (normalizeString(cardNameStr) === normalizedInput) {
       // art type prefix like EX1 etc.
       const artType = card.id.split('_').slice(0, -1).join('_') || 'Unknown set';
+      // get artist name from card data, fallback to 'Unknown artist' if not available
+      const artist = card.artist || 'Unknown artist';
+      // get rarity
+      const rarity = getRarityClass(card.rarity);
+      // get rarity display name
+      const rarityDisplay = rarity.charAt(0).toUpperCase() + rarity.slice(1);
       matches.push({
         previewUrl: `https://art.hearthstonejson.com/v1/256x/${card.id}.jpg`,  // search shows 256x resolution card
         fullUrl: `https://art.hearthstonejson.com/v1/orig/${card.id}.png`, // Open in new tab opens original resolution
         actualName: cardNameStr,
         artType: artType,
+        artist: artist,
+        rarity: rarity,
+        rarityDisplay: rarityDisplay,
         locale: locale
       });
     }
   }
-
   return matches;
 }
 
+// suggestions
 function findSimilarCards(cardName, locale = currentLocale) {
   const cardsData = cardsByLocale[locale] || [];
   const normalizedInput = normalizeString(cardName);
@@ -151,6 +180,7 @@ function findSimilarCards(cardName, locale = currentLocale) {
   return [...new Set(matches)];  // set to remove duplicates
 }
 
+// suggestions as user types
 function suggestionMaker(query) {
   const datalist = document.getElementById('cardSuggestions');
   datalist.innerHTML = '';
@@ -177,6 +207,7 @@ function suggestionMaker(query) {
   });
 }
 
+// error message with suggestions
 function showErrorMessage(message, similarCards = []) {
   const errorDiv = document.getElementById('errorMessage');
   errorDiv.innerHTML = message;
@@ -214,6 +245,7 @@ function hideErrorMessage() {
   errorDiv.style.display = 'none';
 }
 
+// displays card art
 function showArt(artDataArray) {
   hideErrorMessage();
   const artResult = document.getElementById('artResult');
@@ -222,17 +254,18 @@ function showArt(artDataArray) {
 
   artDataArray.forEach(data => {
     const wrapper = document.createElement('div');
-    wrapper.className = 'art-wrapper';
+    wrapper.className = `art-wrapper rarity-${data.rarity}`;
     wrapper.innerHTML = `
       <img src="${data.previewUrl}" alt="Card Art" class="art-image">
       <div class="art-name">${data.actualName}</div>
       <div class="art-type">${data.artType}</div>
+      <div class="art-artist">${data.artist}</div>
+      <div class="art-rarity rarity-${data.rarity}">${data.rarityDisplay}</div>
       <a href="${data.fullUrl}" target="_blank" rel="noopener noreferrer" class="art-link">Open in new tab</a>
     `;
     artResult.appendChild(wrapper);
   });
 }
-
 function hideArt() {
   document.getElementById('artResult').classList.remove('show');
 }
@@ -241,19 +274,19 @@ function showLoading() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('searchBtn').disabled = true;
 }
-
 function hideLoading() {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('searchBtn').disabled = false;
 }
 
+// initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async function() {
   buildLocaleDropdown();
-
   const input = document.getElementById('cardName');
   const form = document.getElementById('searchForm');
   const localeButton = document.getElementById('localeButton');
 
+  // toggle locale dropdown on button click
   if (localeButton) {
     localeButton.addEventListener('click', (e) => {
       e.preventDefault();
@@ -262,15 +295,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
+  // close dropdown when clicking outside
   document.addEventListener('click', (e) => {
     const picker = document.querySelector('.locale-picker');
     if (picker && !picker.contains(e.target)) closeLocaleDropdown();
   });
 
+  // make suggestions on input
   input.addEventListener('input', (e) => {
     suggestionMaker(e.target.value);
   });
 
+  // submit on change (datalist selection)
   input.addEventListener('change', () => {
     if (!input.value.trim()) return;
     form.requestSubmit();
@@ -279,6 +315,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, 0);
   });
 
+  // form submission handling stuff
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
     const cardName = input.value.trim();
@@ -302,19 +339,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 
       if (results.length > 0) {
         showArt(results);
-      } else {
+      } 
+      else {
         const similarCards = findSimilarCards(cardName, currentLocale);
-        if (similarCards.length > 0) {
-          showErrorMessage(`"${cardName}" not found.`, similarCards);
-        } else {
-          showErrorMessage(`"${cardName}" doesn't exist.`);
-        }
+        if (similarCards.length > 0) {showErrorMessage(`"${cardName}" not found.`, similarCards);}
+        else {showErrorMessage(`"${cardName}" doesn't exist.`);}
       }
 
       hideLoading();
     }, 200);
   });
 
+  // initial data load + set placeholder
   await fetchAllCardsData();
   setRandomPlaceholder();
 });
