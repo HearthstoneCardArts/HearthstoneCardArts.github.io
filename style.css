@@ -17,12 +17,12 @@
   --radius-lg: 8px;
   --radius-xl: 12px;
   
-  /* Rarity colors */
   --rarity-common: #9d9d9d;
   --rarity-rare: #0070dd;
   --rarity-epic: #a335ee;
   --rarity-legendary: #ff8000;
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -40,7 +40,6 @@
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
     
-    /* Dark mode rarity colors (slightly adjusted for visibility) */
     --rarity-common: #8a8a8a;
     --rarity-rare: #3a8fd4;
     --rarity-epic: #9b4dca;
@@ -293,7 +292,6 @@ b {
   transition: border-color 0.3s ease;
 }
 
-/* Rarity border styles - subtle outline around the card */
 .art-wrapper.rarity-common {
   border-color: var(--rarity-common);
   border-width: 2px;
@@ -340,7 +338,6 @@ b {
   letter-spacing: 0.05em;
 }
 
-/* Artist name styling - slightly darker than expansion name */
 .art-artist {
   font-size: 12px;
   font-weight: 400;
@@ -350,7 +347,6 @@ b {
   letter-spacing: 0.03em;
 }
 
-/* Rarity label - optional small text showing rarity */
 .art-rarity {
   font-size: 10px;
   font-weight: 600;
