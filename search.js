@@ -1,5 +1,7 @@
 let cardsByLocale = {};
 let currentLocale = 'enUS';
+let currentSearch = '';
+
 
 // locales with flags
 const localeOptions = {
@@ -19,6 +21,7 @@ const localeOptions = {
 };
 const supportedLocales = Object.keys(localeOptions);
 
+
 const localePlaceholder = {
   enUS: 'For example',
   deDE: 'Zum Beispiel',
@@ -35,6 +38,7 @@ const localePlaceholder = {
   plPL: 'Na przykład'
 };
 
+
 const rarityMap = {
   '1': 'common',
   '2': 'common',
@@ -48,6 +52,7 @@ const rarityMap = {
   'LEGENDARY': 'legendary'
 };
 
+
 // remove accents, special chars, lowercase
 function normalizeString(str) {
   return (str || '')
@@ -57,11 +62,26 @@ function normalizeString(str) {
     .replace(/[^\p{L}\p{N}]+/gu, '');
 }
 
+
 function getRarityClass(rarity) {
   if (!rarity) return 'common';
   const rarityLower = String(rarity).toUpperCase();
   return rarityMap[rarityLower] || rarityMap[rarity] || 'common';
 }
+
+
+function updateQueryParam(q) {
+  const url = new URL(window.location.href);
+  if (q) url.searchParams.set('q', q);
+  else url.searchParams.delete('q');
+  window.history.replaceState({}, '', url);
+}
+
+
+function getQueryParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || '';
+}
+
 
 async function fetchCardsData(locale = 'enUS') {
   try {
@@ -78,9 +98,11 @@ async function fetchCardsData(locale = 'enUS') {
   }
 }
 
+
 async function fetchAllCardsData() {
   await Promise.all(supportedLocales.map(locale => fetchCardsData(locale)));
 }
+
 
 // random card name as placeholder
 function setRandomPlaceholder() {
@@ -89,17 +111,21 @@ function setRandomPlaceholder() {
   if (!input) return;
   if (!cards.length) {return;}
 
+
   const randomCard = cards[Math.floor(Math.random() * cards.length)];
   const label = localePlaceholder[currentLocale] || 'For example';
   input.placeholder = `${label}: ${randomCard.name}`;
 }
+
 
 // locale dropdown menu
 function buildLocaleDropdown() {
   const dropdown = document.getElementById('localeDropdown');
   if (!dropdown) return;
 
+
   dropdown.innerHTML = '';
+
 
   Object.entries(localeOptions).forEach(([code, info]) => {
     const item = document.createElement('button');
@@ -121,6 +147,7 @@ function buildLocaleDropdown() {
   });
 }
 
+
 function toggleLocaleDropdown() {
   const dropdown = document.getElementById('localeDropdown');
   if (dropdown) dropdown.classList.toggle('show');
@@ -130,11 +157,13 @@ function closeLocaleDropdown() {
   if (dropdown) dropdown.classList.remove('show');
 }
 
+
 // art by exact name match
 function findCardArt(cardName, locale = currentLocale) {
   const cardsData = cardsByLocale[locale] || [];
   const normalizedInput = normalizeString(cardName);
   const matches = [];
+
 
   for (const card of cardsData) {
     const cardNameStr = card.name || '';
@@ -148,7 +177,7 @@ function findCardArt(cardName, locale = currentLocale) {
       // get rarity display name
       const rarityDisplay = rarity.charAt(0).toUpperCase() + rarity.slice(1);
       matches.push({
-        previewUrl: `https://art.hearthstonejson.com/v1/256x/${card.id}.jpg`,  // search shows 256x resolution card
+        previewUrl: `https://art.hearthstonejson.com/v1/512x/${card.id}.jpg`,  // search shows 512x resolution card
         fullUrl: `https://art.hearthstonejson.com/v1/orig/${card.id}.png`, // Open in new tab opens original resolution
         actualName: cardNameStr,
         artType: artType,
@@ -162,11 +191,13 @@ function findCardArt(cardName, locale = currentLocale) {
   return matches;
 }
 
+
 // suggestions
 function findSimilarCards(cardName, locale = currentLocale) {
   const cardsData = cardsByLocale[locale] || [];
   const normalizedInput = normalizeString(cardName);
   const matches = [];
+
 
   for (const card of cardsData) {
     const cardNameStr = card.name || '';
@@ -177,8 +208,10 @@ function findSimilarCards(cardName, locale = currentLocale) {
     }
   }
 
+
   return [...new Set(matches)];  // set to remove duplicates
 }
+
 
 // suggestions as user types
 function suggestionMaker(query) {
@@ -186,10 +219,12 @@ function suggestionMaker(query) {
   datalist.innerHTML = '';
   if (!query.trim()) return;
 
+
   const cardsData = cardsByLocale[currentLocale] || [];
   const normalizedInput = normalizeString(query);
   const seen = new Set();
   const matches = [];
+
 
   for (const card of cardsData) {
     const name = card.name || '';
@@ -200,6 +235,7 @@ function suggestionMaker(query) {
     }
   }
 
+
   matches.forEach(name => {
     const option = document.createElement('option');
     option.value = name;
@@ -207,16 +243,19 @@ function suggestionMaker(query) {
   });
 }
 
+
 // error message with suggestions
 function showErrorMessage(message, similarCards = []) {
   const errorDiv = document.getElementById('errorMessage');
   errorDiv.innerHTML = message;
   errorDiv.style.display = 'block';
 
+
   if (similarCards.length > 0) {
     const suggestionsDiv = document.createElement('div');
     suggestionsDiv.className = 'suggestions-list';
     suggestionsDiv.innerHTML = '<div style="margin-top: 10px; font-weight: 600;">Perhaps you meant:</div>';
+
 
     similarCards.forEach(cardName => {
       const link = document.createElement('a');
@@ -233,11 +272,14 @@ function showErrorMessage(message, similarCards = []) {
       suggestionsDiv.appendChild(link);
     });
 
+
     errorDiv.appendChild(suggestionsDiv);
   }
 
+
   document.getElementById('artResult').classList.remove('show');
 }
+
 
 function hideErrorMessage() {
   const errorDiv = document.getElementById('errorMessage');
@@ -245,12 +287,14 @@ function hideErrorMessage() {
   errorDiv.style.display = 'none';
 }
 
+
 // displays card art
 function showArt(artDataArray) {
   hideErrorMessage();
   const artResult = document.getElementById('artResult');
   artResult.innerHTML = '';
   artResult.classList.add('show');
+
 
   artDataArray.forEach(data => {
     const wrapper = document.createElement('div');
@@ -270,6 +314,7 @@ function hideArt() {
   document.getElementById('artResult').classList.remove('show');
 }
 
+
 function showLoading() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('searchBtn').disabled = true;
@@ -279,12 +324,21 @@ function hideLoading() {
   document.getElementById('searchBtn').disabled = false;
 }
 
+
 // initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async function() {
   buildLocaleDropdown();
   const input = document.getElementById('cardName');
   const form = document.getElementById('searchForm');
   const localeButton = document.getElementById('localeButton');
+
+
+  const initialQ = getQueryParam('q');
+  if (initialQ) {
+    currentSearch = initialQ;
+    input.value = initialQ;
+  }
+
 
   // toggle locale dropdown on button click
   if (localeButton) {
@@ -295,16 +349,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
+
   // close dropdown when clicking outside
   document.addEventListener('click', (e) => {
     const picker = document.querySelector('.locale-picker');
     if (picker && !picker.contains(e.target)) closeLocaleDropdown();
   });
 
+
   // make suggestions on input
   input.addEventListener('input', (e) => {
     suggestionMaker(e.target.value);
+    currentSearch = e.target.value.trim();
+    updateQueryParam(currentSearch);
   });
+
 
   // submit on change (datalist selection)
   input.addEventListener('change', () => {
@@ -315,27 +374,36 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, 0);
   });
 
+
   // form submission handling stuff
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
     const cardName = input.value.trim();
+
 
     if (!cardName) {
       showErrorMessage('Please enter a card name.');
       return;
     }
 
+    currentSearch = cardName;
+    updateQueryParam(cardName);
+
+
     showLoading();
     hideArt();
     hideErrorMessage();
+
 
     if (!Object.keys(cardsByLocale).length) {
       await fetchAllCardsData();
       setRandomPlaceholder();
     }
 
+
     setTimeout(() => {
       const results = findCardArt(cardName, currentLocale);
+
 
       if (results.length > 0) {
         showArt(results);
@@ -346,11 +414,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         else {showErrorMessage(`"${cardName}" doesn't exist.`);}
       }
 
+
       hideLoading();
     }, 200);
   });
 
+
   // initial data load + set placeholder
   await fetchAllCardsData();
   setRandomPlaceholder();
+
+  if (initialQ) {
+    form.requestSubmit();
+  }
 });
