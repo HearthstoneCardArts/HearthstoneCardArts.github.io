@@ -17,6 +17,7 @@
   --radius-lg: 8px;
   --radius-xl: 12px;
   
+  --rarity-free: #c9c7c7;
   --rarity-common: #9d9d9d;
   --rarity-rare: #0070dd;
   --rarity-epic: #a335ee;
@@ -39,7 +40,8 @@
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
-    
+
+    --rarity-free: #c9c7c7;
     --rarity-common: #8a8a8a;
     --rarity-rare: #3a8fd4;
     --rarity-epic: #9b4dca;
@@ -292,6 +294,11 @@ b {
   transition: border-color 0.3s ease;
 }
 
+.art-wrapper.rarity-free {
+  border-color: var(--rarity-free);
+  border-width: 2px;
+}
+
 .art-wrapper.rarity-common {
   border-color: var(--rarity-common);
   border-width: 2px;
@@ -353,6 +360,10 @@ b {
   margin-top: 2px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.art-rarity.rarity-free {
+  color: var(--rarity-free);
 }
 
 .art-rarity.rarity-common {
