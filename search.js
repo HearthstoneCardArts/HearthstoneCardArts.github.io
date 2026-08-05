@@ -42,7 +42,7 @@ const rarityMap = {
   '3': 'rare',
   '4': 'epic',
   '5': 'legendary',
-  'FREE': 'common',
+  'FREE': 'free',
   'COMMON': 'common',
   'RARE': 'rare',
   'EPIC': 'epic',
