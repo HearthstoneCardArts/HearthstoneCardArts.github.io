@@ -9,10 +9,10 @@ A: These are unique prefixes meant to identify arts across multiple expansions.
 <details>
 <summary>Click to reveal all possible prefixes </summary><br>
   
-`(Updated on 2026-08-05, format yy-mm-dd)`  
+`(Updated on 2026-09-01, format yy-mm-dd)`  
   
 ```
-Total: 223
+Total: 226
 
 AT
 AV
@@ -21,6 +21,7 @@ BG31
 BOT
 BRM
 BT
+CAP
 CATA
 CATA_EVENT
 CFM
@@ -166,6 +167,7 @@ HERO_08av_Jaina
 HERO_08aw_Jaina
 HERO_08ax_Prestor
 HERO_08ay_KitWaxwhisker
+HERO_08cs
 HERO_09ai
 HERO_09aj
 HERO_09ak
@@ -179,6 +181,7 @@ HERO_10ai
 HERO_10aj
 HERO_10ak
 HERO_10al_Aranna
+HERO_11be
 HERO_11o
 HERO_11p
 HERO_11q
@@ -236,8 +239,7 @@ WW
 YOD
 YOG
 YOP
-tt
-```
+tt```
 </details>
 <br><br>
 
