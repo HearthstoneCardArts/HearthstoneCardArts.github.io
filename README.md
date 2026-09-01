@@ -11,9 +11,8 @@ A: These are unique prefixes meant to identify arts across multiple expansions.
   
 `(Updated on 2026-09-01, format yy-mm-dd)`  
   
-```
 Total: 226
-
+```
 AT
 AV
 BAR
@@ -239,7 +238,8 @@ WW
 YOD
 YOG
 YOP
-tt```
+tt
+```
 </details>
 <br><br>
 
