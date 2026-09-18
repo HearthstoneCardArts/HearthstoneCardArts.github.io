@@ -9,13 +9,15 @@ A: These are unique prefixes meant to identify arts across multiple expansions.
 <details>
 <summary>Click to reveal all possible prefixes </summary><br>
   
-`(Updated on 2026-09-01, format yy-mm-dd)`  
+`(Updated on 2026-09-18, format yy-mm-dd)`  
   
-Total: 226
+Total: 228
 ```
 AT
 AV
 BAR
+BE
+BE_EVENT
 BG31
 BOT
 BRM
